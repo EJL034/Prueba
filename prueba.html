@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/styles.css">
+  <title>Prueba - Sistema de Gestión de Incapacidades</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 30px;
+    }
+
+    .section {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      border-left: 4px solid #667eea;
+    }
+
+    .section h2 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 1.3em;
+    }
+
+    .test-button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: background 0.3s;
+    }
+
+    .test-button:hover {
+      background: #764ba2;
+    }
+
+    .test-button.danger {
+      background: #e74c3c;
+    }
+
+    .test-button.danger:hover {
+      background: #c0392b;
+    }
+
+    .test-button.success {
+      background: #27ae60;
+    }
+
+    .test-button.success:hover {
+      background: #229954;
+    }
+
+    .output {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .output.success {
+      border-left: 3px solid #27ae60;
+    }
+
+    .output.error {
+      border-left: 3px solid #e74c3c;
+    }
+
+    .output.info {
+      border-left: 3px solid #3498db;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .stat-box {
+      background: white;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    .stat-box .number {
+      font-size: 2em;
+      color: #667eea;
+      font-weight: bold;
+    }
+
+    .stat-box .label {
+      color: #666;
+      font-size: 0.85em;
+      margin-top: 5px;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .alert {
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border-left: 4px solid;
+    }
+
+    .alert.success {
+      background: #d4edda;
+      border-color: #28a745;
+      color: #155724;
+    }
+
+    .alert.error {
+      background: #f8d7da;
+      border-color: #dc3545;
+      color: #721c24;
+    }
+
+    .alert.info {
+      background: #d1ecf1;
+      border-color: #17a2b8;
+      color: #0c5460;
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Verificación de sesión -->
+  <script>
+    (function() {
+      // Cargar autenticación primero
+      const authScript = document.createElement('script');
+      authScript.src = 'js/autenticacion.js';
+      authScript.onload = function() {
+        if (!autenticacion.tieneSesionActiva()) {
+          window.location.href = 'login.html';
+        }
+      };
+      document.head.appendChild(authScript);
+    })();
+  </script>
+
+  <div class="container">
+    <header>
+      <h1>🧪 Pruebas - Sistema de Gestión de Incapacidades</h1>
+      <p>Módulos: Datos y Validaciones</p>
+    </header>
+
+    <div class="content">
+      <!-- Sección 1: Datos -->
+      <div class="section">
+        <h2>📊 Módulo de Datos</h2>
+        
+        <button class="test-button success" onclick="testObtenerTodas()">
+          Obtener todas las incapacidades
+        </button>
+        
+        <button class="test-button" onclick="testObtenerPorId()">
+          Obtener por ID (INC-001-2026)
+        </button>
+        
+        <button class="test-button" onclick="testGuardar()">
+          Guardar nueva incapacidad
+        </button>
+        
+        <button class="test-button" onclick="testActualizar()">
+          Actualizar (cambiar estado)
+        </button>
+        
+        <button class="test-button" onclick="testEstadisticas()">
+          Obtener estadísticas
+        </button>
+        
+        <button class="test-button" onclick="testGenerarId()">
+          Generar ID único
+        </button>
+
+        <button class="test-button danger" onclick="testLimpiar()">
+          Limpiar datos (¡CUIDADO!)
+        </button>
+
+        <div id="datosOutput" class="output"></div>
+      </div>
+
+      <!-- Sección 2: Validaciones -->
+      <div class="section">
+        <h2>✅ Módulo de Validaciones</h2>
+        
+        <div class="form-group">
+          <label>Calcular días</label>
+          <input type="date" id="fechaInicio" value="2026-08-15">
+          <input type="date" id="fechaFin" value="2026-08-30">
+          <button class="test-button" onclick="testCalcularDias()">
+            Calcular días
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label>Validar boleta</label>
+          <input type="text" id="numeroBoleta" placeholder="ej: BOL-2026-001" value="BOL-2026-001">
+          <button class="test-button" onclick="testValidarBoleta()">
+            Validar boleta única
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label>Validar cédula</label>
+          <input type="text" id="numeroCedula" placeholder="ej: 123-456789-0" value="101-234567-8">
+          <button class="test-button" onclick="testValidarCedula()">
+            Validar formato cédula
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label>Validar archivo</label>
+          <input type="file" id="archivoInput" accept="pdf,image/*">
+          <button class="test-button" onclick="testValidarArchivo()">
+            Validar archivo
+          </button>
+        </div>
+
+        <button class="test-button" onclick="testValidarFormulario()">
+          Validar formulario completo
+        </button>
+
+        <div id="validacionOutput" class="output"></div>
+      </div>
+
+      <!-- Sección 3: Formulario de Prueba -->
+      <div class="section full-width">
+        <h2>📝 Formulario de Registro (Prueba Completa)</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input type="text" id="formNombre" placeholder="Juan Pérez García" value="Roberto López">
+          </div>
+          
+          <div class="form-group">
+            <label>Cédula</label>
+            <input type="text" id="formCedula" placeholder="123-456789-0" value="104-567890-1">
+          </div>
+          
+          <div class="form-group">
+            <label>Departamento</label>
+            <select id="formDepartamento">
+              <option value="">-- Seleccionar --</option>
+              <option value="Recursos Humanos">Recursos Humanos</option>
+              <option value="Operaciones">Operaciones</option>
+              <option value="Contabilidad">Contabilidad</option>
+              <option value="Ventas">Ventas</option>
+              <option value="IT">IT</option>
+              <option value="Finanzas">Finanzas</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Tipo de Incapacidad</label>
+            <select id="formTipo">
+              <option value="">-- Seleccionar --</option>
+              <option value="Médica">Médica</option>
+              <option value="Maternidad">Maternidad</option>
+              <option value="Paternidad">Paternidad</option>
+              <option value="Accidente Laboral">Accidente Laboral</option>
+              <option value="Enfermedad Profesional">Enfermedad Profesional</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Número de Boleta</label>
+            <input type="text" id="formBoleta" placeholder="BOL-2026-004" value="BOL-2026-007">
+          </div>
+          
+          <div class="form-group">
+            <label>Fecha Inicio</label>
+            <input type="date" id="formFechaInicio" value="2026-08-25">
+          </div>
+          
+          <div class="form-group">
+            <label>Fecha Fin</label>
+            <input type="date" id="formFechaFin" value="2026-09-10">
+          </div>
+          
+          <div class="form-group">
+            <label>Archivo Adjunto (PDF o Imagen)</label>
+            <input type="file" id="formArchivo" accept="application/pdf,image/*">
+          </div>
+        </div>
+
+        <button class="test-button success" onclick="testRegistroCompleto()">
+          Validar y Guardar Completo
+        </button>
+
+        <div id="formularioOutput" class="output"></div>
+      </div>
+
+      <!-- Sección 4: Estadísticas -->
+      <div class="section full-width">
+        <h2>📈 Estadísticas del Sistema</h2>
+        <button class="test-button" onclick="actualizarEstadisticas()">
+          Actualizar Estadísticas
+        </button>
+        <div class="stats" id="estadisticas"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts - Orden importante -->
+  <script src="js/config.js"></script>
+  <script src="js/datos.js"></script>
+  <script src="js/validaciones.js"></script>
+  <script src="js/utilidades.js"></script>
+  <script src="js/autenticacion.js"></script>
+  <script src="js/reportes.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    // Dropdown de usuario
+    document.addEventListener('click', (e) => {
+      const btnUsuario = e.target.closest('.btn-usuario-menu');
+      const dropdownMenu = document.querySelector('.dropdown-menu');
+      
+      if (btnUsuario) {
+        e.stopPropagation();
+        if (dropdownMenu) {
+          dropdownMenu.classList.toggle('show');
+        }
+      } else if (!e.target.closest('.usuario-dropdown')) {
+        if (dropdownMenu) {
+          dropdownMenu.classList.remove('show');
+        }
+      }
+    });
+  </script>
+</body>
+</html>
